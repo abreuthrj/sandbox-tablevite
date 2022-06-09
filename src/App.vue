@@ -9,7 +9,11 @@ import { RouterView } from "vue-router";
 </template>
 
 <style>
-  html {
-    font-family: sans-serif;
-  }
+html {
+  font-family: sans-serif;
+}
+
+html, body, #app {
+  height: 100%;
+}
 </style>

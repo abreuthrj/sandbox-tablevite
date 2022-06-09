@@ -1,80 +1,72 @@
 <script>
 import { useTableStore } from "../stores/tables";
+import StyledTable from "../components/StyledTable.vue";
 
 export default {
-  setup() {
-    const tablesState = useTableStore();
-
-    return {
-      tablesState,
-    };
-  },
-
-  data() {
-    return {
-      nameField: "",
-      selecteds: [],
-      checkAll: false,
-      nameIsWrong: false
-    };
-  },
-
-  methods: {
-    addRow() {
-      if(this.nameField == '')
-        return this.nameIsWrong = true
-
-      this.tablesState.add(this.nameField);
-      this.nameField = "";
+    setup() {
+        const tablesState = useTableStore();
+        return {
+            tablesState,
+        };
     },
-
-    rmRows() {
-      this.tablesState.rm(this.selecteds);
-      this.selecteds = [];
-      this.checkAll = false;
+    data() {
+        return {
+            nameField: "",
+            selecteds: [],
+            checkAll: false,
+            nameIsWrong: false
+        };
     },
-
-    select(i) {
-      var exist = this.selecteds.findIndex((id) => id == i);
-
-      if (exist == -1) this.selecteds.push(i);
-      else this.selecteds.splice(exist, 1);
-
-      console.log(this.selecteds);
+    methods: {
+        addRow() {
+            if (this.nameField == "")
+                return this.nameIsWrong = true;
+            this.tablesState.add(this.nameField);
+            this.nameField = "";
+        },
+        rmRows() {
+            this.tablesState.rm(this.selecteds);
+            this.selecteds = [];
+            this.checkAll = false;
+        },
+        select(i) {
+            var exist = this.selecteds.findIndex((id) => id == i);
+            if (exist == -1)
+                this.selecteds.push(i);
+            else
+                this.selecteds.splice(exist, 1);
+            console.log(this.selecteds);
+        },
+        selectAll() {
+            if (this.checkAll)
+                this.selecteds = this.tablesState.tables.map((_, i) => i);
+            else
+                this.selecteds = [];
+        },
+        clearInputName() {
+            this.nameIsWrong = false;
+        },
+        seed() {
+            [
+                "Clientes",
+                "Pedidos",
+                "Tarefas",
+                "Alimentação",
+                "Estudos",
+                "Carros",
+                "Vendas",
+                "Produtos",
+            ].forEach((name) => {
+                this.tablesState.add(name);
+            });
+        },
     },
-
-    selectAll() {
-      if(this.checkAll) 
-        this.selecteds = this.tablesState.tables.map((_,i) => i)
-      else
-        this.selecteds = []
+    computed: {
+        anySelected() {
+            return this.selecteds.length > 0;
+        }
     },
-
-    clearInputName() {
-      this.nameIsWrong = false
-    },
-
-    seed() {
-      [
-        "Clientes",
-        "Pedidos",
-        "Tarefas",
-        "Alimentação",
-        "Estudos",
-        "Carros",
-        "Vendas",
-        "Produtos",
-      ].forEach((name) => {
-        this.tablesState.add(name);
-      });
-    },
-  },
-
-  computed: {
-    anySelected() {
-      return this.selecteds.length > 0
-    }
-  }
+    components: { StyledTable }
 };
 </script>
 
@@ -90,7 +82,7 @@ export default {
       <button v-show="anySelected" @click="rmRows">Remove Tables</button>
     </div>
 
-    <table>
+    <StyledTable>
       <thead>
         <tr>
           <th>
@@ -111,22 +103,30 @@ export default {
             />
           </td>
           <td>
-            {{ t.name }}
+            <router-link :to="`/tables/${i}`">
+              {{ t.name }}
+            </router-link>
           </td>
           <td>
             {{ t.date }}
           </td>
         </tr>
       </tbody>
-    </table>
+    </StyledTable>
   </div>
 </template>
 
 <style>
+body {
+  background-color: hsl(214, 27%, 96%);
+}
+</style>
+
+<style scoped>
 .form {
   padding: 4em;
   margin: 2em;
-  background-color: #36475d;
+  background-color: white; /* #36475d; */
   /* border-radius: 1em; */
 }
 
@@ -140,6 +140,7 @@ export default {
   box-sizing: border-box;
   transition: .15s;
   border: 2px solid transparent;
+  background-color: hsl(214, 27%, 98%);;
 }
 
 .form input.err {
@@ -165,7 +166,7 @@ export default {
   padding:2em;
 
   box-sizing: border-box;
-  background-color: hsl(214, 27%, 98%);
+  background-color: white;
 }
 
 .table-actions {
@@ -187,11 +188,6 @@ export default {
   background-color: #00000006;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
 table td:first-child,
 table th:first-child
 {
@@ -210,21 +206,22 @@ table th:last-child
   width: 20%;
   text-align: right;
 }
-tr.empty {
-  height: 1em;
-}
-td,
-th
-{
-  padding: .5em;
-}
 
-th {
-  color: #b9b9b9;
+table td:nth-child(2) {
+  font-weight: bold;
   font-size: .9em;
 }
 
-td {
-  font-size: 1.1em;
+table a {
+  text-decoration: none;
+  color: inherit;
+}
+
+tr td, input, button {
+  transition: .1s;
+}
+
+tr:hover td {
+  background-color: hsl(0, 0%, 98%);
 }
 </style>
